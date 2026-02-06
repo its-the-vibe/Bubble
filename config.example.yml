@@ -1,0 +1,44 @@
+redis:
+  addr: "localhost:6379"
+  password: ""
+  list_name: "poppit:notifications"
+
+server:
+  port: "8080"
+
+commands:
+  - name: "Deploy Production"
+    repo: "example/repo"
+    branch: "refs/heads/main"
+    type: "manual-trigger"
+    dir: "/opt/deployments/production"
+    commands:
+      - "git pull origin main"
+      - "./deploy.sh production"
+
+  - name: "Run Tests"
+    repo: "example/repo"
+    branch: "refs/heads/develop"
+    type: "manual-trigger"
+    dir: "/opt/testing"
+    commands:
+      - "npm install"
+      - "npm test"
+
+  - name: "Build Docker Image"
+    repo: "example/repo"
+    branch: "refs/heads/main"
+    type: "manual-trigger"
+    dir: "/opt/docker-builds"
+    commands:
+      - "docker build -t myapp:latest ."
+      - "docker push myapp:latest"
+
+  - name: "Restart Service"
+    repo: "example/service"
+    branch: "refs/heads/main"
+    type: "manual-trigger"
+    dir: "/opt/services"
+    commands:
+      - "systemctl restart myservice"
+      - "systemctl status myservice"
