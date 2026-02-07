@@ -5,11 +5,11 @@ services:
     ports:
       - "${PORT}:8080"
     environment:
-      - BUBBLE_CONFIG=/config/config.yml
+      - BUBBLE_CONFIG=/config/config.yaml
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
       # Mount config as readonly
-      - ./config.yml:/config/config.yml:ro
+      - ./config.yaml:/config/config.yaml:ro
     # Set the container filesystem as readonly
     read_only: true
     restart: on-failure:10
