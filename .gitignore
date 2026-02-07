@@ -8,6 +8,9 @@
 *.so
 *.dylib
 
+# Bubble binary
+bubble
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -26,6 +29,10 @@ go.work.sum
 
 # env file
 .env
+
+# Config files (exclude real configs, only example configs should be committed)
+config.yml
+config.yaml
 
 # Editor/IDE
 # .idea/

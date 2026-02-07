@@ -1,0 +1,14 @@
+services:
+  bubble:
+    build: .
+    image: bubble:latest
+    ports:
+      - "${PORT}:8080"
+    environment:
+      - BUBBLE_CONFIG=/config/config.yml
+    volumes:
+      # Mount config as readonly
+      - ./config.yml:/config/config.yml:ro
+    # Set the container filesystem as readonly
+    read_only: true
+    restart: on-failure:10
