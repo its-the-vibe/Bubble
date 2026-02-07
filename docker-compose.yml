@@ -13,3 +13,5 @@ services:
     # Set the container filesystem as readonly
     read_only: true
     restart: on-failure:10
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
