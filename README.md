@@ -102,6 +102,7 @@ This results in a small, secure container image.
 ## Environment Variables
 
 - `BUBBLE_CONFIG`: Path to the configuration file (default: `config.yml`)
+- `REDIS_PASSWORD`: Redis password (overrides the password set in config.yml). This is the recommended way to set the Redis password for security reasons.
 
 ## Development
 
