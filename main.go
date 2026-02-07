@@ -143,6 +143,11 @@ func loadConfig() error {
 		config.Redis.ListName = "poppit:notifications"
 	}
 
+	// Override Redis password from environment variable if set
+	if redisPassword := os.Getenv("REDIS_PASSWORD"); redisPassword != "" {
+		config.Redis.Password = redisPassword
+	}
+
 	return nil
 }
 

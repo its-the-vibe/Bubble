@@ -1,6 +1,6 @@
 redis:
   addr: "localhost:6379"
-  password: ""
+  password: ""  # Can be overridden by REDIS_PASSWORD environment variable
   list_name: "poppit:notifications"
 
 server:
