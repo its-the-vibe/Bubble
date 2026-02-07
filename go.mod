@@ -1,6 +1,8 @@
 module github.com/its-the-vibe/Bubble
 
-go 1.24.12
+go 1.25
+
+toolchain go1.25.7
 
 require (
 	github.com/redis/go-redis/v9 v9.17.3

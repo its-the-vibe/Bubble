@@ -3,7 +3,7 @@ services:
     build: .
     image: bubble:latest
     ports:
-      - "8080:8080"
+      - "${PORT}:8080"
     environment:
       - BUBBLE_CONFIG=/config/config.yml
     volumes:
@@ -11,7 +11,4 @@ services:
       - ./config.yml:/config/config.yml:ro
     # Set the container filesystem as readonly
     read_only: true
-    restart: unless-stopped
-    # Add tmpfs for any temporary file needs
-    tmpfs:
-      - /tmp
+    restart: on-failure:10
