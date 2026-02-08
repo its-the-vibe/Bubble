@@ -288,9 +288,16 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
             }
         }
         
+        // Debounce function for resize events
+        let resizeTimeout;
+        function debouncedCheckScroll() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(checkAndLockScroll, 150);
+        }
+        
         // Check on load and resize
         window.addEventListener('load', checkAndLockScroll);
-        window.addEventListener('resize', checkAndLockScroll);
+        window.addEventListener('resize', debouncedCheckScroll);
         
         function executeCommand(name) {
             const messageDiv = document.getElementById('message');
@@ -306,20 +313,24 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
             .then(data => {
                 messageDiv.textContent = data.message;
                 messageDiv.className = 'message ' + (data.success ? 'success' : 'error') + ' show';
+                // Re-check scroll lock after message appears
+                checkAndLockScroll();
                 setTimeout(() => {
                     messageDiv.className = 'message';
+                    // Re-check scroll lock after message disappears
+                    checkAndLockScroll();
                 }, 5000);
-                // Re-check scroll lock after message appears/disappears
-                checkAndLockScroll();
             })
             .catch(error => {
                 messageDiv.textContent = 'Error: ' + error.message;
                 messageDiv.className = 'message error show';
+                // Re-check scroll lock after message appears
+                checkAndLockScroll();
                 setTimeout(() => {
                     messageDiv.className = 'message';
+                    // Re-check scroll lock after message disappears
+                    checkAndLockScroll();
                 }, 5000);
-                // Re-check scroll lock after message appears/disappears
-                checkAndLockScroll();
             });
         }
     </script>
