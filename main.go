@@ -165,10 +165,17 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
             padding: 0;
             box-sizing: border-box;
         }
+        html, body {
+            height: 100%;
+            /* Prevent overscroll bounce on mobile */
+            overscroll-behavior: none;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Use dynamic viewport height for better mobile support */
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -255,6 +262,36 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
     </div>
 
     <script>
+        // Lock scrolling if content fits within viewport
+        function checkAndLockScroll() {
+            const body = document.body;
+            const html = document.documentElement;
+            
+            // Check if content height is less than or equal to viewport height
+            const contentHeight = Math.max(
+                body.scrollHeight,
+                body.offsetHeight,
+                html.clientHeight,
+                html.scrollHeight,
+                html.offsetHeight
+            );
+            const viewportHeight = window.innerHeight;
+            
+            if (contentHeight <= viewportHeight) {
+                // Content fits, disable scrolling
+                body.style.overflow = 'hidden';
+                html.style.overflow = 'hidden';
+            } else {
+                // Content needs scrolling, enable it
+                body.style.overflow = 'auto';
+                html.style.overflow = 'auto';
+            }
+        }
+        
+        // Check on load and resize
+        window.addEventListener('load', checkAndLockScroll);
+        window.addEventListener('resize', checkAndLockScroll);
+        
         function executeCommand(name) {
             const messageDiv = document.getElementById('message');
             
@@ -272,6 +309,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
                 setTimeout(() => {
                     messageDiv.className = 'message';
                 }, 5000);
+                // Re-check scroll lock after message appears/disappears
+                checkAndLockScroll();
             })
             .catch(error => {
                 messageDiv.textContent = 'Error: ' + error.message;
@@ -279,6 +318,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
                 setTimeout(() => {
                     messageDiv.className = 'message';
                 }, 5000);
+                // Re-check scroll lock after message appears/disappears
+                checkAndLockScroll();
             });
         }
     </script>
