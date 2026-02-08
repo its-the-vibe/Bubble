@@ -82,6 +82,129 @@ docker compose up
 
 The container runs in read-only mode for security.
 
+### Running as a systemd Service
+
+For production deployments on Linux systems, you can run Bubble as a systemd service for automatic startup and management.
+
+#### Prerequisites
+
+- A Linux system with systemd (most modern distributions)
+- Bubble binary built and installed
+- Redis service running
+- A dedicated user account for running Bubble (recommended for security)
+
+#### Installation Steps
+
+1. **Create a dedicated user for Bubble** (recommended):
+```bash
+sudo useradd -r -s /bin/false bubble
+```
+
+2. **Create necessary directories**:
+```bash
+sudo mkdir -p /opt/bubble
+sudo mkdir -p /etc/bubble
+sudo mkdir -p /var/log/bubble
+```
+
+3. **Build and install the Bubble binary**:
+```bash
+go build -o bubble .
+sudo cp bubble /opt/bubble/
+sudo chown bubble:bubble /opt/bubble/bubble
+sudo chmod 755 /opt/bubble/bubble
+```
+
+4. **Install the configuration file**:
+```bash
+sudo cp config.yml /etc/bubble/config.yml
+sudo chown bubble:bubble /etc/bubble/config.yml
+sudo chmod 640 /etc/bubble/config.yml
+```
+
+5. **Install the systemd service file**:
+```bash
+sudo cp contrib/bubble.service /etc/systemd/system/
+sudo chmod 644 /etc/systemd/system/bubble.service
+```
+
+6. **Configure the service** (optional):
+
+Edit `/etc/systemd/system/bubble.service` if you need to customize:
+- Installation paths (default: `/opt/bubble`)
+- Configuration file location (default: `/etc/bubble/config.yml`)
+- User/group (default: `bubble`)
+- Redis password (uncomment and set `REDIS_PASSWORD` environment variable)
+
+7. **Set proper permissions**:
+```bash
+sudo chown -R bubble:bubble /var/log/bubble
+```
+
+8. **Reload systemd and enable the service**:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable bubble.service
+```
+
+9. **Start the service**:
+```bash
+sudo systemctl start bubble.service
+```
+
+#### Managing the Service
+
+**Check service status**:
+```bash
+sudo systemctl status bubble.service
+```
+
+**View logs**:
+```bash
+sudo journalctl -u bubble.service -f
+```
+
+**Restart the service**:
+```bash
+sudo systemctl restart bubble.service
+```
+
+**Stop the service**:
+```bash
+sudo systemctl stop bubble.service
+```
+
+**Disable automatic startup**:
+```bash
+sudo systemctl disable bubble.service
+```
+
+#### Troubleshooting
+
+If the service fails to start:
+
+1. Check the service status and logs:
+```bash
+sudo systemctl status bubble.service
+sudo journalctl -u bubble.service -n 50
+```
+
+2. Verify configuration file exists and is valid:
+```bash
+sudo -u bubble cat /etc/bubble/config.yml
+```
+
+3. Ensure Redis is running:
+```bash
+sudo systemctl status redis.service
+```
+
+4. Check file permissions:
+```bash
+ls -la /opt/bubble/bubble
+ls -la /etc/bubble/config.yml
+```
+
 ### Docker Image
 
 The Dockerfile uses a multi-stage build:

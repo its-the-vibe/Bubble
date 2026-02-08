@@ -1,0 +1,33 @@
+[Unit]
+Description=Bubble - Web front-end for Poppit
+Documentation=https://github.com/its-the-vibe/Bubble
+After=network-online.target redis.service
+Wants=network-online.target
+Requires=redis.service
+
+[Service]
+Type=simple
+User=bubble
+Group=bubble
+WorkingDirectory=/opt/bubble
+ExecStart=/opt/bubble/bubble
+Restart=on-failure
+RestartSec=5s
+
+# Environment variables
+Environment="BUBBLE_CONFIG=/etc/bubble/config.yml"
+# Uncomment and set if Redis requires a password:
+#Environment="REDIS_PASSWORD=your_redis_password"
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/bubble
+
+# Resource limits
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
