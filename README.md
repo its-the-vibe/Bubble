@@ -97,14 +97,13 @@ For production deployments on Linux systems, you can run Bubble as a systemd ser
 
 1. **Create a dedicated user for Bubble** (recommended):
 ```bash
-sudo useradd -r -s /bin/false bubble
+sudo useradd -r -s /usr/sbin/nologin bubble
 ```
 
 2. **Create necessary directories**:
 ```bash
 sudo mkdir -p /opt/bubble
 sudo mkdir -p /etc/bubble
-sudo mkdir -p /var/log/bubble
 ```
 
 3. **Build and install the Bubble binary**:
@@ -136,18 +135,13 @@ Edit `/etc/systemd/system/bubble.service` if you need to customize:
 - User/group (default: `bubble`)
 - Redis password (uncomment and set `REDIS_PASSWORD` environment variable)
 
-7. **Set proper permissions**:
-```bash
-sudo chown -R bubble:bubble /var/log/bubble
-```
-
-8. **Reload systemd and enable the service**:
+7. **Reload systemd and enable the service**:
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable bubble.service
 ```
 
-9. **Start the service**:
+8. **Start the service**:
 ```bash
 sudo systemctl start bubble.service
 ```
@@ -163,6 +157,8 @@ sudo systemctl status bubble.service
 ```bash
 sudo journalctl -u bubble.service -f
 ```
+
+Bubble logs to stdout/stderr, which are automatically captured by systemd and can be viewed using `journalctl`.
 
 **Restart the service**:
 ```bash

@@ -24,7 +24,6 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/var/log/bubble
 
 # Resource limits
 LimitNOFILE=4096
