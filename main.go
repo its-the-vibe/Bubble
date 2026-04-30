@@ -402,8 +402,10 @@ func handleExecute(w http.ResponseWriter, r *http.Request) {
 
 func sendJSONResponse(w http.ResponseWriter, success bool, message string) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": success,
 		"message": message,
-	})
+	}); err != nil {
+		log.Printf("Error encoding JSON response: %v", err)
+	}
 }
