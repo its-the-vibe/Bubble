@@ -1,4 +1,7 @@
 # Bubble
+
+[![CI](https://github.com/its-the-vibe/Bubble/actions/workflows/ci.yaml/badge.svg)](https://github.com/its-the-vibe/Bubble/actions/workflows/ci.yaml)
+
 Web front-end for [Poppit](https://github.com/its-the-vibe/Poppit)
 
 Bubble provides a simple web interface that displays command buttons. When clicked, these buttons send notifications to Poppit via Redis for execution.
@@ -224,6 +227,15 @@ This results in a small, secure container image.
 - `REDIS_PASSWORD`: Redis password (overrides the password set in config.yml). This is the recommended way to set the Redis password for security reasons.
 
 ## Development
+
+### Makefile Targets
+
+```bash
+make build   # Build the binary
+make test    # Run tests
+make lint    # Run golangci-lint
+make clean   # Remove built binary
+```
 
 ### Building
 
