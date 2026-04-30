@@ -151,7 +151,7 @@ func loadConfig() error {
 	return nil
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
+func handleIndex(w http.ResponseWriter, _ *http.Request) {
 	tmpl := `
 <!DOCTYPE html>
 <html lang="en">
