@@ -45,9 +45,20 @@ commands:
     branch: "refs/heads/main"
     type: "manual-trigger"
     dir: "/opt/deployments/production"
+    list_name: "poppit:prod-queue"  # Optional: overrides the global list_name for this button
     commands:
       - "git pull origin main"
       - "./deploy.sh production"
+
+  - name: "Run Tests"
+    repo: "example/repo"
+    branch: "refs/heads/develop"
+    type: "manual-trigger"
+    dir: "/opt/testing"
+    # No list_name: falls back to the global redis.list_name
+    commands:
+      - "npm install"
+      - "npm test"
 ```
 
 ### Running with Go
@@ -218,7 +229,7 @@ This results in a small, secure container image.
 2. The UI displays buttons for each configured command
 3. When a button is clicked:
    - The command details are sent to the backend
-   - A JSON notification is pushed to the Redis list configured in `config.yml`
+   - A JSON notification is pushed to the Redis list: the button's `list_name` if set, otherwise the global `redis.list_name` from `config.yml`
    - Poppit monitors this Redis list and executes the commands
 
 ## Environment Variables

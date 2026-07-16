@@ -193,6 +193,113 @@ func TestHandleExecuteCommandNotFound(t *testing.T) {
 	}
 }
 
+func TestResolveListName(t *testing.T) {
+	tests := []struct {
+		name           string
+		globalListName string
+		buttonListName string
+		expected       string
+	}{
+		{
+			name:           "uses button list_name when set",
+			globalListName: "poppit:notifications",
+			buttonListName: "poppit:prod-queue",
+			expected:       "poppit:prod-queue",
+		},
+		{
+			name:           "falls back to global list_name when button list_name is empty",
+			globalListName: "poppit:notifications",
+			buttonListName: "",
+			expected:       "poppit:notifications",
+		},
+		{
+			name:           "returns button list_name even when global is empty",
+			globalListName: "",
+			buttonListName: "poppit:custom",
+			expected:       "poppit:custom",
+		},
+		{
+			name:           "returns empty string when both are empty",
+			globalListName: "",
+			buttonListName: "",
+			expected:       "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := resolveListName(tc.globalListName, tc.buttonListName)
+			if got != tc.expected {
+				t.Errorf("resolveListName(%q, %q) = %q, want %q", tc.globalListName, tc.buttonListName, got, tc.expected)
+			}
+		})
+	}
+}
+
+func TestLoadConfigCommandListName(t *testing.T) {
+	originalConfig := os.Getenv("BUBBLE_CONFIG")
+	defer os.Setenv("BUBBLE_CONFIG", originalConfig)
+
+	testConfig := `redis:
+  addr: "localhost:6379"
+  list_name: "poppit:notifications"
+
+server:
+  port: "8080"
+
+commands:
+  - name: "Deploy Production"
+    repo: "example/repo"
+    branch: "refs/heads/main"
+    type: "manual-trigger"
+    dir: "/opt/deployments"
+    list_name: "poppit:prod-queue"
+    commands:
+      - "deploy.sh"
+
+  - name: "Run Tests"
+    repo: "example/repo"
+    branch: "refs/heads/develop"
+    type: "manual-trigger"
+    dir: "/opt/testing"
+    commands:
+      - "npm test"
+`
+	testConfigPath := t.TempDir() + "/config.yml"
+	if err := os.WriteFile(testConfigPath, []byte(testConfig), 0644); err != nil {
+		t.Fatalf("Failed to create test config: %v", err)
+	}
+
+	os.Setenv("BUBBLE_CONFIG", testConfigPath)
+	os.Unsetenv("REDIS_PASSWORD")
+
+	if err := loadConfig(); err != nil {
+		t.Fatalf("Failed to load config: %v", err)
+	}
+
+	if len(config.Commands) != 2 {
+		t.Fatalf("Expected 2 commands, got %d", len(config.Commands))
+	}
+
+	// First command should have a list_name override
+	if config.Commands[0].ListName != "poppit:prod-queue" {
+		t.Errorf("Expected command[0].ListName = 'poppit:prod-queue', got %q", config.Commands[0].ListName)
+	}
+
+	// Second command should have no list_name override
+	if config.Commands[1].ListName != "" {
+		t.Errorf("Expected command[1].ListName to be empty, got %q", config.Commands[1].ListName)
+	}
+
+	// Verify resolveListName applies fallback correctly
+	if got := resolveListName(config.Redis.ListName, config.Commands[0].ListName); got != "poppit:prod-queue" {
+		t.Errorf("Expected 'poppit:prod-queue' for command with override, got %q", got)
+	}
+	if got := resolveListName(config.Redis.ListName, config.Commands[1].ListName); got != "poppit:notifications" {
+		t.Errorf("Expected 'poppit:notifications' for command without override, got %q", got)
+	}
+}
+
 func TestHandleIndex(t *testing.T) {
 	config = Config{
 		Commands: []CommandButton{
