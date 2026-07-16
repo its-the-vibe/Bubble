@@ -37,6 +37,7 @@ type CommandButton struct {
 	Branch   string   `yaml:"branch"`
 	Type     string   `yaml:"type"`
 	Dir      string   `yaml:"dir"`
+	ListName string   `yaml:"list_name"`
 	Commands []string `yaml:"commands"`
 }
 
@@ -389,8 +390,11 @@ func handleExecute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Determine which Redis list to push to
+	listName := resolveListName(config.Redis.ListName, cmdButton.ListName)
+
 	// Push to Redis list
-	if err := redisClient.RPush(ctx, config.Redis.ListName, string(notificationJSON)).Err(); err != nil {
+	if err := redisClient.RPush(ctx, listName, string(notificationJSON)).Err(); err != nil {
 		log.Printf("Redis error: %v", err)
 		sendJSONResponse(w, false, "Failed to send command to Poppit")
 		return
@@ -398,6 +402,13 @@ func handleExecute(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Command '%s' sent to Poppit successfully", req.Name)
 	sendJSONResponse(w, true, fmt.Sprintf("Command '%s' sent to Poppit successfully!", req.Name))
+}
+
+func resolveListName(globalListName, buttonListName string) string {
+	if buttonListName != "" {
+		return buttonListName
+	}
+	return globalListName
 }
 
 func sendJSONResponse(w http.ResponseWriter, success bool, message string) {

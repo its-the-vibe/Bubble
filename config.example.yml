@@ -1,7 +1,7 @@
 redis:
   addr: "localhost:6379"
   password: ""  # Can be overridden by REDIS_PASSWORD environment variable
-  list_name: "poppit:notifications"
+  list_name: "poppit:notifications"  # Global default
 
 server:
   port: "8080"
@@ -12,6 +12,7 @@ commands:
     branch: "refs/heads/main"
     type: "manual-trigger"
     dir: "/opt/deployments/production"
+    list_name: "poppit:prod-queue"  # Optional override: publishes to a different Redis list
     commands:
       - "git pull origin main"
       - "./deploy.sh production"
@@ -21,6 +22,7 @@ commands:
     branch: "refs/heads/develop"
     type: "manual-trigger"
     dir: "/opt/testing"
+    # No list_name specified - falls back to global "poppit:notifications"
     commands:
       - "npm install"
       - "npm test"
