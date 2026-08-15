@@ -1,7 +1,8 @@
 services:
   bubble:
     build: .
-    image: bubble:latest
+    image: ghcr.io/its-the-vibe/bubble:latest
+    pull_policy: always
     ports:
       - "${PORT}:8080"
     environment:
