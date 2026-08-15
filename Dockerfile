@@ -1,5 +1,8 @@
 # Build stage
-FROM golang:1.26.6-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26.6-alpine AS builder
+
+ARG TARGETOS
+ARG TARGETARCH
 
 WORKDIR /build
 
@@ -14,19 +17,18 @@ COPY *.go ./
 
 # Build the application
 # CGO_ENABLED=0 for static binary compatible with scratch
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o bubble .
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -ldflags="-w -s" -o bubble .
 
 # Runtime stage
-FROM scratch
+FROM gcr.io/distroless/static-debian13:nonroot
 
 # Copy the binary from builder
 COPY --from=builder /build/bubble /bubble
 
-# Copy CA certificates for HTTPS (if needed)
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
 # Expose the default port
 EXPOSE 8080
+
+USER nonroot:nonroot
 
 # Run the application
 ENTRYPOINT ["/bubble"]
