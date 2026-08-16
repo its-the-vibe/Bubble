@@ -12,7 +12,7 @@ Bubble provides a simple web interface that displays command buttons. When click
 - Sends notifications to Poppit via Redis
 - Configurable via YAML file
 - Docker support with readonly container
-- Built with Go 1.24
+- Built with Go 1.26
 
 ## Quick Start
 

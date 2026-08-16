@@ -248,7 +248,7 @@ func handleIndex(w http.ResponseWriter, _ *http.Request) {
 </head>
 <body>
     <div class="container">
-        <h1>🫧 Bubble</h1>
+        <h1>🫧 Bubble 🫧</h1>
         <p class="subtitle">Web Frontend for Poppit</p>
         
         <div class="buttons-grid">
