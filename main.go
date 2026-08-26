@@ -173,7 +173,7 @@ func handleIndex(w http.ResponseWriter, _ *http.Request) {
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(45deg, #833ab4 0%, #fd1d1d 100%);
+            background: linear-gradient(117deg, #833ab4 0%, #e25a5a 100%);
             /* Use dynamic viewport height for better mobile support */
             min-height: 100vh;
             min-height: 100dvh;
@@ -207,7 +207,7 @@ func handleIndex(w http.ResponseWriter, _ *http.Request) {
             margin-top: 20px;
         }
         .command-button {
-            background: linear-gradient(45deg, #833ab4 0%, #fd1d1d 100%);
+            background: linear-gradient(117deg, #833ab4 0%, #e25a5a 100%);
             color: white;
             border: none;
             padding: 20px;
